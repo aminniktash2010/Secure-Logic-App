@@ -1,0 +1,123 @@
+
+
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "logicAppName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Logic App."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location for the Logic App."
+      }
+    },
+    "functionApiConnectionId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID of the API Connection for the Azure Function."
+      }
+    },
+    "functionApiConnectionName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the API Connection for the Azure Function."
+      }
+    },
+    "managedApiId": {
+        "type": "string",
+        "metadata": {
+            "description": "Managed API ID for the Azure Function connector."
+        }
+    },
+    "functionApiPath": {
+        "type": "string",
+        "metadata": {
+            "description": "API route/path for the target Azure Function."
+        }
+    },
+    "triggerInterval": {
+        "type": "int",
+        "metadata": {
+            "description": "Recurrence interval for the trigger."
+        }
+    },
+    "triggerFrequency": {
+        "type": "string",
+        "metadata": {
+            "description": "Recurrence frequency for the trigger (e.g., Minute, Hour)."
+        }
+    }
+    
+  },
+  "variables": {},
+  "resources": [
+    {
+      "type": "Microsoft.Logic/workflows",
+      "apiVersion": "2019-05-01", 
+      "name": "[parameters('logicAppName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "state": "Enabled", 
+        "definition": {
+          "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": { 
+            "$connections": {
+              "defaultValue": {},
+              "type": "Object"
+            }
+          },
+          "triggers": {
+            "Recurrence": {
+              "type": "Recurrence",
+              "recurrence": {
+                
+                "frequency": "[parameters('triggerFrequency')]",
+                "interval": "[parameters('triggerInterval')]"
+              }
+            }
+          },
+          "actions": {
+            "Call_Function": {
+              "type": "ApiConnection",
+              "inputs": {
+                "body": {},
+                "host": {
+                  
+                  "connection": {
+                    "name": "@parameters('$connections')['azurefunction']['connectionName']"
+                  }
+                },
+                "method": "POST",
+                
+                "path": "[parameters('functionApiPath')]"
+              },
+              "runAfter": {}
+            }
+          },
+          "outputs": {}
+        },
+        
+        "parameters": {
+          "$connections": {
+            "value": {
+              "azurefunction": {
+                 
+                "connectionId": "[parameters('functionApiConnectionId')]",
+                "connectionName": "[parameters('functionApiConnectionName')]",
+                "id": "[parameters('managedApiId')]"
+              }
+            }
+          }
+        }
+        
+      }
+    }
+  ],
+  "outputs": {} 
+}
