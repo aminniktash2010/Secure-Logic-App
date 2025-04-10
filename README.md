@@ -37,7 +37,7 @@ Private connection between Logic Apps and Functions
 Secure parameters for connection configuration
 
 
-This implementation creates a secure environment where:
+# This implementation creates a secure environment where:
 
 Functions are triggered every 10 minutes via Logic Apps
 
@@ -47,7 +47,7 @@ Sensitive data is protected through managed identities
 
 Infrastructure changes are tracked through versioned state files
 
-To enhance security further:
+# To enhance security further:
 
 Integrate Azure Key Vault for secret management
 
